@@ -188,52 +188,85 @@
     }
 
 
-
     var evline1 = eventline(100);
     var evline2 = eventline(500);
     var cbox = combinatorbox(310, "FlatMap");
 
-    var marble1 = marble(100, 100, "green");
-    var square1 = square(400, 100, "steelblue");
-    var diamond1 = diamond(800, 100, "red");
-    var pent1 = pentagon(600, 100, "brown");
-    var tria1 = triangle(250, 100, "pink");
-    var complete1 = complete(900, 100);
-    var err1 = error(1100, 100);
+    var input1 = [
+        {shape: "marble", color: "blue", "tick": 1},
+        {shape: "marble", color: "green", "tick": 3},
+        {shape: "marble", color: "yellow", "tick": 4},
+        {shape: "error", color: undefined, "tick": 10}
+    ];
 
-    // rx sample
 
-    var source = Rx.Observable.range(2,8);
+    var in1obs = Rx.Observable.from(input1).flatMap(function (e) {
+        if (e.shape == 'complete') {
+            return Rx.Observable.empty().delay(e.tick * 1000);
+        } else if (e.shape == 'error') {
+            return Rx.Observable.empty().delay(e.tick * 1000).concat(Rx.Observable.throw(new Error("Die!")));
+        } else {
+            return Rx.Observable.just(e).delay(e.tick * 1000);
+        }
+    });
+     // combinator (delay)
 
-    var subscription = source.subscribe(
-            function (x) { console.log('onNext: ' + x); },
-            function (e) { console.log('onError: ' + e.message); },
-            function () { console.log('onCompleted'); }
-    );
+    var outobs = in1obs.delay(500);
 
-    console.log('Current time: ' + Date.now());
 
-    var timer = Rx.Observable.timer(
-            5000, /* 5 seconds */
-            16 /* 1 second */)
-            .timestamp();
+    in1obs.subscribe(function (e) {
+        console.info("in1: " + e.tick);
+    }, function (e) {}, function (e) {});
 
-    var combined = Rx.Observable.zip(
-            source,
-            timer,
-            function(e1, e2) {
-                return [e1, e2];
+    outobs.subscribe(function (e) {
+        console.info("out: " + e.tick);
+    },  function (e) {}, function (e) {});
+
+
+    // render observables
+    var ref = new Date().getTime();
+
+    function frame(e) {
+        return ((e.timestamp - ref) / 100).toFixed(0);
+    }
+
+    in1obs.timestamp().subscribe(
+            // onNext
+            function (e) {
+                var fr = frame(e);
+                marble(50 + 10 * fr, 100, e.value.color);
+            },
+            // onError
+            function (e) {
+                var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
+                error(50 + 10 * frame, 100);
+            },
+            // onComplete
+            function (e) {
+                var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
+                complete(50 + 10 * frame, 100);
             }
     );
 
 
-    var combinator = combined.subscribe(
-            function (x) {
-                console.log(x[0] + ": " + x[1].timestamp);
-                // move
-                //diamond1.attr("transform", "translate(" + (90 + 5*[x[0]]) + ",0) rotate(45)");
+    outobs.timestamp().subscribe(
+            // onNext
+            function (e) {
+                var fr = frame(e);
+                marble(50 + 10*fr, 500, e.value.color);
+            },
+            // onError
+            function (e) {
+                var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
+                error(50 + 10*frame, 500);
+            },
+            // onComplete
+            function (e) {
+                var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
+                complete(50 + 10*frame, 500);
             }
     );
+
 
 
 </script>
