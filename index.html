@@ -17,7 +17,7 @@
     var height = 620;
 
     var sw = 6;
-    var r = 3;
+    var r = 1;
 
     var svg = d3.select("body").append("svg")
             .attr("width", width)
@@ -107,7 +107,6 @@
 
         return svg.append("polygon")
                 .attr("points", points)
-                //.attr("rx", r).attr("ry", r)
                 .style("fill", color)
                 .style("stroke-linejoin", "round")
                 .style("stroke-width", sw)
@@ -131,7 +130,6 @@
 
         return svg.append("polygon")
                 .attr("points", points)
-            //.attr("rx", r).attr("ry", r)
                 .style("fill", color)
                 .style("stroke-linejoin", "round")
                 .style("stroke-width", sw)
@@ -160,29 +158,29 @@
                 .style("fill", "white")
                 .style("stroke-width", sw)
                 .style("stroke", "black")
-                //.style("filter", "url(#shadow)")
                 ;
 
     }
 
     function complete(x, y) {
+        var v = 40;
         return svg.append("line")
                 .attr("x1", x).attr("x2", x)
-                .attr("y1", y - 40).attr("y2", y + 40)
+                .attr("y1", y - v).attr("y2", y + v)
                 .style("stroke-width", sw)
                 .style("stroke", "black")
                 ;
     }
 
     function error(x, y) {
+        var v = 40;
         var g = svg.append("g");
-
         g.append("line")
-                .attr("x1", x - 40).attr("x2", x + 40)
-                .attr("y1", y - 40).attr("y2", y + 40);
+                .attr("x1", x - v).attr("x2", x + v)
+                .attr("y1", y - v).attr("y2", y + v);
         g.append("line")
-                .attr("x1", x + 40).attr("x2", x - 40)
-                .attr("y1", y - 40).attr("y2", y + 40);
+                .attr("x1", x + v).attr("x2", x - v)
+                .attr("y1", y - v).attr("y2", y + v);
 
         return g.style("stroke-width", sw)
                 .style("stroke", "black");
