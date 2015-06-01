@@ -5,6 +5,7 @@
  1. Vizalizacija rada Rx kombinatora/operatora. 
  2. Definisanje lanca kombinatora koristeći Rx Js biblioteku.
  3. Lako uključivanje u HTML dokumente koristeći nekoliko linija JavaScript koda.
+ 4. Definisanje ulaznih tokova iz brauzer DOM evenata (mouseover, keyup, mouseover ...)
  5. (samo JS verzija) Generisanje SVG statičkih prikaza pojedinih faza animacije 
 
 ## ToDo
@@ -12,6 +13,7 @@
  - (pause/stop) kontrola animacije
  - (create operators) prikaz operatora bez ulaznog toka (Just, Throw, Empty...)
  - (multiple input streams) prikaz operatora sa više ulaza (Map, Merge ...)
+ - (dom event streams) broauzer DOM event tokovi 
  - (graphics) strelice, senke...
 
 ## Primer
