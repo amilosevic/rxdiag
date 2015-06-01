@@ -2,11 +2,12 @@
 
 
 ## Ciljevi
- 1. Vizalizacija rada Rx kombinatora/operatora. 
- 2. Definisanje lanca kombinatora koristeći Rx Js biblioteku.
- 3. Lako uključivanje u HTML dokumente koristeći nekoliko linija JavaScript koda.
+ 1. Okvir za vizalizacija rada Rx kombinatora/operatora. 
+ 2. Lako uključivanje animacije u HTML dokumente koristeći nekoliko linija JavaScript koda.
+ 3. Definisanje ulaznih tokova animacije koristeći nizove i objekte.
  4. Definisanje ulaznih tokova iz brauzer DOM evenata (mouseover, keyup, mouseover ...)
- 5. (samo JS verzija) Generisanje SVG statičkih prikaza pojedinih faza animacije 
+ 5. Definisanje lanca kombinatora koristeći Rx Js biblioteku.
+ 6. (samo JS verzija) Generisanje SVG statičkih prikaza pojedinih faza animacije 
 
 ## ToDo
  - (loop) kružno izvršavanje animacije
