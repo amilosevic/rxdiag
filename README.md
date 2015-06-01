@@ -1,6 +1,5 @@
 # rxdiag - Animirani Rx "Marble" Dijagrami
 
-http://rx.eu01.aws.af.cm/delay500.html
 
 ## Ciljevi
  1. Vizalizacija rada Rx kombinatora/operatora. 
@@ -13,7 +12,11 @@ http://rx.eu01.aws.af.cm/delay500.html
  - (pause/stop) kontrola animacije
  - (create operators) prikaz operatora bez ulaznog toka (Just, Throw, Empty...)
  - (multiple input streams) prikaz operatora sa više ulaza (Map, Merge ...)
- - 
+ - (graphics) strelice, senke...
+
+## Primer
+
+Primer rada kombinatora [**Delay**](http://reactivex.io/documentation/operators/delay.html) sa parametrom 500ms. Ulazni tok se okončava izuzetkom. http://rx.eu01.aws.af.cm/delay500.html 
 
 ## Linkovi
  - http://www.w3schools.com/svg/
