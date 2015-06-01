@@ -2,14 +2,14 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>Rx Diag (JS) - Delay(500ms)</title>
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.2/rx.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.2/rx.time.js"></script>
 </head>
 <body>
-<h1>Example</h1>
+<h1>Rx Diag - Delay(500ms)</h1>
 
 <script>
 
@@ -148,10 +148,11 @@
                 ;
     }
 
-    function combinatorbox(y, text) {
+    function combinator(y, text) {
         h = 130;
         w = width - 2*15;
-        return svg.append("rect")
+        // @todo: make this a group
+        rect = svg.append("rect")
                 .attr("x", 15).attr("y", y - h/2)
                 .attr("height", h).attr("width", w)
                 .attr("rx", r).attr("ry", r)
@@ -159,6 +160,16 @@
                 .style("stroke-width", sw)
                 .style("stroke", "black")
                 ;
+
+        svg.append("text")
+                .attr("x", width/2).attr("y", y + 15)
+                .text(text)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "48px")
+                .attr("font-weight", "bold")
+                .attr("text-anchor", "middle");
+
+        return rect;
 
     }
 
@@ -190,13 +201,13 @@
 
     var evline1 = eventline(100);
     var evline2 = eventline(500);
-    var cbox = combinatorbox(310, "FlatMap");
+    var cbox = combinator(310, "Delay(500ms)");
 
     var input1 = [
         {shape: "marble", color: "blue", "tick": 1},
         {shape: "marble", color: "green", "tick": 3},
         {shape: "marble", color: "yellow", "tick": 4},
-        {shape: "error", color: undefined, "tick": 10}
+        {shape: "error", color: undefined, "tick": 8}
     ];
 
 
