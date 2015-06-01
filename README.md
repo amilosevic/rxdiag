@@ -13,7 +13,7 @@
  - (loop) kružno izvršavanje animacije
  - (pause/stop) kontrola animacije
  - (create operators) prikaz operatora bez ulaznog toka (Just, Throw, Empty...)
- - (multiple input streams) prikaz operatora sa više ulaza (Map, Merge ...)
+ - (multiple inputs) prikaz operatora sa više ulaza (Map, Merge ...)
  - (dom event streams) brauzer DOM event tokovi 
  - (graphics) strelice, senke...
 
