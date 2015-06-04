@@ -1,6 +1,27 @@
-# rxdiag
+# rxdiag - Animirani Rx "Marble" Dijagrami
 
-## Links
+
+## Ciljevi
+ 1. Okvir za vizalizacija rada Rx kombinatora/operatora. 
+ 2. Lako uključivanje animacije u HTML dokumente koristeći nekoliko linija JavaScript koda.
+ 3. Definisanje ulaznih tokova animacije koristeći nizove i objekte.
+ 4. Definisanje ulaznih tokova iz brauzer DOM evenata (mouseover, keyup, mouseover ...)
+ 5. Definisanje lanca kombinatora koristeći Rx Js biblioteku.
+ 6. (samo JS verzija) Generisanje SVG statičkih prikaza pojedinih faza animacije 
+
+## ToDo
+ - (loop) kružno izvršavanje animacije
+ - (pause/stop) kontrola animacije
+ - (create operators) prikaz operatora bez ulaznog toka (Just, Throw, Empty...)
+ - (multiple inputs) prikaz operatora sa više ulaza (Map, Merge ...)
+ - (dom event streams) brauzer DOM event tokovi 
+ - (graphics) strelice, senke...
+
+## Primer
+
+Primer rada kombinatora [**Delay**](http://reactivex.io/documentation/operators/delay.html) sa parametrom 500ms. Ulazni tok se okončava izuzetkom. http://rx.eu01.aws.af.cm/delay500.html 
+
+## Linkovi
  - http://www.w3schools.com/svg/
  - https://developer.mozilla.org/en-US/docs/Web/SVG
  - http://www.december.com/html/spec/colorsvg.html
