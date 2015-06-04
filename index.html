@@ -220,9 +220,13 @@
             return Rx.Observable.just(e).delay(e.tick * 1000);
         }
     });
-     // combinator (delay)
 
-    var outobs = in1obs.delay(500);
+     // combinator (delay)
+    function transform() {
+        return in1obs.delay(500);
+    }
+
+    var outobs = transform();
 
 
     in1obs.subscribe(function (e) {
@@ -245,7 +249,7 @@
             // onNext
             function (e) {
                 var fr = frame(e);
-                marble(50 + 10 * fr, 100, e.value.color);
+                drawEv(e.value, 50 + 10 * fr, 100);
             },
             // onError
             function (e) {
@@ -264,7 +268,7 @@
             // onNext
             function (e) {
                 var fr = frame(e);
-                marble(50 + 10*fr, 500, e.value.color);
+                drawEv(e.value, 50 + 10 * fr, 500);
             },
             // onError
             function (e) {
@@ -277,6 +281,18 @@
                 complete(50 + 10*frame, 500);
             }
     );
+
+    function drawEv(s, x, y) {
+        switch (s.shape) {
+            case 'marble': marble(x, y, s.color); break;
+            case 'square': square(x, y, s.color); break;
+            case 'pentagon': pentagon(x, y, s.color); break;
+            case 'diamond': diamond(x, y, s.color); break;
+            case 'triangle': triangle(x, y, s.color); break;
+            default :
+                console.error("unknown element" + e.shape);
+        }
+    }
 
 
 
