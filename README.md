@@ -37,5 +37,6 @@ Primer rada kombinatora [**Delay**](http://reactivex.io/documentation/operators/
  - https://xgrommx.github.io/rx-book/
  - https://github.com/staltz/rxmarbles
  
- - http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html 
+ - http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html
+ - http://www.w3schools.com/js/
  
