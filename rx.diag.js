@@ -1,49 +1,71 @@
-var RxDiag = (function() {
+var RxDiag;
+RxDiag = (function () {
 
     var rxDiag = {};
 
     // -- public --
 
-    rxDiag.init = function (props, input) {
-        this.props = props;
+    rxDiag.init = function (props, op, input) {
+        this.props = props || {};
 
         var input1 = input || [];
 
+        this.inObs = [];
+
+        // set up combinator/operator
+        this.op = op;
+
+        // extract inputs
+        var args = Array.prototype.slice.call(arguments, 2);
+
         // draw background and initialize draw surface
+
+        var delta = (args.length - 1) * 120;
 
         this.svg = d3.select("body").append("svg")
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", height + delta);
 
-        var evline1 = eventline(this.svg, 100);
-        var evline2 = eventline(this.svg, 500);
+        var svg1 = this.svg;
 
-        var cbox = combinator(this.svg, 310, "Delay(" + this.props.delay + ")");
-
-        // initialize
-
-        var in1obs = Rx.Observable.from(input1).flatMap(function (e) {
-            if (e.shape == 'complete') {
-                return Rx.Observable.empty().delay(e.tick * 1000);
-            } else if (e.shape == 'error') {
-                return Rx.Observable.empty().delay(e.tick * 1000).concat(Rx.Observable.throw(new Error("Die!")));
-            } else {
-                return Rx.Observable.just(e).delay(e.tick * 1000);
-            }
+        args.forEach(function (ob, index) {
+            eventline(svg1, 100 + index*120);
         });
 
-        // combinator (delay)
+        eventline(this.svg, 500 + delta) ;
+
+        var cbox = combinator(this.svg, 310 + delta, (this.props.title || "..."));
+
+        // initialize
+        function project(in1) {
+            return Rx.Observable.from(in1).flatMap(function (e) {
+                if (e.shape == 'complete') {
+                    return Rx.Observable.empty().delay(e.tick * 1000);
+                } else if (e.shape == 'error') {
+                    return Rx.Observable.empty().delay(e.tick * 1000).concat(Rx.Observable.throw(new Error("Die!")));
+                } else {
+                    return Rx.Observable.just(e).delay(e.tick * 1000);
+                }
+            });
+        }
+
+
+        this.inObs = args.map(project);
+
+        // apply combinator
         function transform() {
-            return in1obs.delay(RxDiag.props.delay);
+            return rxDiag.op.apply(null, rxDiag.inObs);
         }
 
         var outobs = transform();
 
 
-        in1obs.subscribe(function (e) {
-            console.info("in1: " + e.tick);
-        }, function (e) {
-        }, function (e) {
+        this.inObs.forEach(function (obs, index) {
+            obs.subscribe(function (e) {
+                console.info("in" + index + ": " + e.tick);
+            }, function (e) {
+            }, function (e) {
+            });
         });
 
         outobs.subscribe(function (e) {
@@ -53,52 +75,58 @@ var RxDiag = (function() {
         });
 
 
+
         // render observables
         var ref = new Date().getTime();
-
 
         function frame(e) {
             return ((e.timestamp - ref) / 100).toFixed(0);
         }
-        var svg1 = this.svg;
 
 
-        in1obs.timestamp().subscribe(
-            // onNext
-            function (e) {
-                var fr = frame(e);
-                drawEv(svg1, e.value, 50 + 10 * fr, 100);
-            },
-            // onError
-            function (e) {
-                var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
-                error(svg1, 50 + 10 * frame, 100);
-            },
-            // onComplete
-            function (e) {
-                var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
-                complete(svg1, 50 + 10 * frame, 100);
-            }
-        );
+        // subscribe and print
+        this.inObs.forEach(function (obs, index) {
+            var y = 100 + index*120;
+
+            obs.timestamp().subscribe(
+                // onNext
+                function (e) {
+                    var fr = frame(e);
+                    drawEv(svg1, e.value, 50 + 10 * fr, y);
+                },
+                // onError
+                function (e) {
+                    var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
+                    error(svg1, 50 + 10 * frame, y);
+                },
+                // onComplete
+                function (e) {
+                    var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
+                    complete(svg1, 50 + 10 * frame, y);
+                }
+            );
+        });
+
+        // output y coordinate
+        var outy = 500 + delta;
 
         outobs.timestamp().subscribe(
-            // onNext
+        // onNext
             function (e) {
                 var fr = frame(e);
-                drawEv(svg1, e.value, 50 + 10 * fr, 500);
+                drawEv(svg1, e.value, 50 + 10 * fr, outy);
             },
             // onError
             function (e) {
                 var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
-                error(svg1, 50 + 10 * frame, 500);
+                error(svg1, 50 + 10 * frame, outy);
             },
             // onComplete
             function (e) {
                 var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
-                complete(svg1, 50 + 10 * frame, 500);
+                complete(svg1, 50 + 10 * frame, outy);
             }
         );
-
 
 
     };
