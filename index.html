@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Rx Diag (JS) - Delay(500ms)</title>
+    <title>Rx Diag (JS) - Delay(Examples)</title>
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.2/rx.js"></script>
@@ -15,9 +15,32 @@
 <script>
 
 
+    //
+    var input1 = [
+        {shape: "marble", color: "blue", "tick": 1},
+        {shape: "marble", color: "green", "tick": 3},
+        {shape: "marble", color: "gray", "tick": 4},
+        {shape: "marble", color: "magenta", "tick": 6},
+        {shape: "complete", color: undefined, "tick": 8}
+    ];
 
-    RxDiag.init({delay: 500});
-    RxDiag.init({delay: 1000});
+    //
+    var input2 = [
+        {shape: "marble", color: "blue", "tick": 1},
+        {shape: "marble", color: "green", "tick": 3},
+        {shape: "marble", color: "yellow", "tick": 4},
+        {shape: "error", color: undefined, "tick": 8}
+    ];
+
+
+    RxDiag.init({delay:  500}, input2);
+    RxDiag.init({delay: 1000}, input1); //
+
+    RxDiag.init({delay: 700}, input1); //
+    RxDiag.init({delay: 1200}, input1); //
+
+    RxDiag.init({delay: 1600}, input1); //
+    RxDiag.init({delay: 2000}, input1); //
 
 
 

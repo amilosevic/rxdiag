@@ -4,25 +4,11 @@ var RxDiag = (function() {
 
     // -- public --
 
-    rxDiag.init = function (props) {
+    rxDiag.init = function (props, input) {
         this.props = props;
 
-        this.svg = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height);
+        var input1 = input || [];
 
-        var evline1 = eventline(this.svg, 100);
-        var evline2 = eventline(this.svg, 500);
-
-        var cbox = combinator(this.svg, 310, "Delay(" + this.props.delay + ")");
-
-
-        var input1 = [
-            {shape: "marble", color: "blue", "tick": 1},
-            {shape: "marble", color: "green", "tick": 3},
-            {shape: "marble", color: "yellow", "tick": 4},
-            {shape: "error", color: undefined, "tick": 8}
-        ];
 
         var in1obs = Rx.Observable.from(input1).flatMap(function (e) {
             if (e.shape == 'complete') {
@@ -36,11 +22,11 @@ var RxDiag = (function() {
 
         // combinator (delay)
         function transform() {
-            return in1obs.delay(rxDiag.props.delay);
+            return in1obs.delay(RxDiag.props.delay);
         }
 
-
         var outobs = transform();
+
 
         in1obs.subscribe(function (e) {
             console.info("in1: " + e.tick);
@@ -48,22 +34,22 @@ var RxDiag = (function() {
         }, function (e) {
         });
 
-
         outobs.subscribe(function (e) {
             console.info("out: " + e.tick);
         }, function (e) {
         }, function (e) {
         });
 
+
         // render observables
         var ref = new Date().getTime();
+
 
         function frame(e) {
             return ((e.timestamp - ref) / 100).toFixed(0);
         }
-
-
         var svg1 = this.svg;
+
 
         in1obs.timestamp().subscribe(
             // onNext
@@ -100,6 +86,17 @@ var RxDiag = (function() {
                 complete(svg1, 50 + 10 * frame, 500);
             }
         );
+
+        // draw background
+
+        this.svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        var evline1 = eventline(this.svg, 100);
+        var evline2 = eventline(this.svg, 500);
+
+        var cbox = combinator(this.svg, 310, "Delay(" + this.props.delay + ")");
 
     };
 
