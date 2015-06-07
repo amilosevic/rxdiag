@@ -9,6 +9,18 @@ var RxDiag = (function() {
 
         var input1 = input || [];
 
+        // draw background and initialize draw surface
+
+        this.svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        var evline1 = eventline(this.svg, 100);
+        var evline2 = eventline(this.svg, 500);
+
+        var cbox = combinator(this.svg, 310, "Delay(" + this.props.delay + ")");
+
+        // initialize
 
         var in1obs = Rx.Observable.from(input1).flatMap(function (e) {
             if (e.shape == 'complete') {
@@ -87,16 +99,7 @@ var RxDiag = (function() {
             }
         );
 
-        // draw background
 
-        this.svg = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-        var evline1 = eventline(this.svg, 100);
-        var evline2 = eventline(this.svg, 500);
-
-        var cbox = combinator(this.svg, 310, "Delay(" + this.props.delay + ")");
 
     };
 
