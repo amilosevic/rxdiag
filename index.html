@@ -10,10 +10,9 @@
     <script src="./rx.diag.js"></script>
 </head>
 <body>
-<h1>Rx Diag - Delay(500ms)</h1>
+<h1>Rx Diag - Examples</h1>
 
 <script>
-
 
     // 4 events, onComplete
     var input1 = [
@@ -32,25 +31,28 @@
         {shape: "error", color: undefined, "tick": 8}
     ];
 
-    //
+    // 3 events, onComplete
     var input3 = [
         {shape: "square", color: "brown", "tick": 0},
         {shape: "square", color: "navy", "tick": 7},
         {shape: "square", color: "red", "tick": 9},
         {shape: "complete", color: undefined, "tick": 10}
     ];
+</script>
 
 
-    RxDiag.init({title: "Delay (500ms)"}, function (inObs) { return inObs.delay(500) }, input2);
-    RxDiag.init({title: "Delay (500ms) err"}, function (inObs) { return inObs.delay(500) }, input1); //
-
-
+<script>
+    RxDiag.init({title: "Delay (500ms) err"}, function (inObs) { return inObs.delay(500) }, input2);
+    RxDiag.init({title: "Delay (500ms)"}, function (inObs) { return inObs.delay(500) }, input1); //
     RxDiag.init({}, function (inObs) { return inObs.delay(1600) }, input1); //
+</script>
+
+<hr/>
+
+<script>
     RxDiag.init({title: "Merge()"}, function (inObs0, inObs1) { return Rx.Observable.merge(inObs0, inObs1.delay(2)) }, input1, input2); //
     RxDiag.init({title: "Merge()"}, function (inObs0, inObs1, inObs2) { return Rx.Observable.merge(inObs0, inObs1.delay(2), inObs2.delay(4))}, input1, input2, input3); //
     RxDiag.init({title: "Just()"}, function () { return Rx.Observable.just({shape: "marble", color: "green", tick: "0"}).delay(3000)}); //
-
-
 </script>
 
 </body>
