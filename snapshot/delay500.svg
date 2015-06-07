@@ -15,7 +15,7 @@
     <rect x="15" y="245" height="130" width="1250" rx="1" ry="1"
           style="fill: rgb(255, 255, 255); stroke-width: 6px; stroke: rgb(0, 0, 0);"></rect>
     <text x="640" y="325" font-family="sans-serif" font-size="48px" font-weight="bold" text-anchor="middle">
-        Delay(500ms)
+        Delay(500, "ms")
     </text>
     <circle cx="150" cy="100" r="45" style="fill: rgb(0, 0, 255); stroke-width: 6px; stroke: rgb(0, 0, 0);"></circle>
     <circle cx="200" cy="500" r="45" style="fill: rgb(0, 0, 255); stroke-width: 6px; stroke: rgb(0, 0, 0);"></circle>

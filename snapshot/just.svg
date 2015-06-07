@@ -6,7 +6,7 @@
     <line x1="15" x2="1265" y1="380" y2="380" style="stroke-width: 6px; stroke: rgb(0, 0, 0);"></line>
     <rect x="15" y="125" height="130" width="1250" rx="1" ry="1"
           style="fill: rgb(255, 255, 255); stroke-width: 6px; stroke: rgb(0, 0, 0);"></rect>
-    <text x="640" y="205" font-family="sans-serif" font-size="48px" font-weight="bold" text-anchor="middle">Just()
+    <text x="640" y="205" font-family="sans-serif" font-size="48px" font-weight="bold" text-anchor="middle">Just(...)
     </text>
     <circle cx="350" cy="380" r="45" style="fill: rgb(0, 128, 0); stroke-width: 6px; stroke: rgb(0, 0, 0);"></circle>
     <line x1="410" x2="410" y1="340" y2="420" style="stroke-width: 6px; stroke: rgb(0, 0, 0);"></line>
