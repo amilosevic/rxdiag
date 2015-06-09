@@ -16,6 +16,37 @@
  - ~~(multiple inputs) prikaz operatora sa više ulaza (Map, Merge ...)~~
  - (dom event streams) brauzer DOM event tokovi 
  - (graphics) strelice, senke...
+ 
+## Upotreba
+
+``` html
+<!DOCTYPE html>
+...
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.2/rx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.2/rx.time.js"></script>
+<script src="./rx.diag.js"></script>
+
+<body>
+<script>
+    // 4 events, onComplete
+    var in1 = [
+        {shape: "marble", color: "blue", "tick": 1},
+        {shape: "marble", color: "green", "tick": 3},
+        {shape: "marble", color: "gray", "tick": 4},
+        {shape: "marble", color: "magenta", "tick": 6},
+        {shape: "complete", color: undefined, "tick": 8}
+    ];
+    
+    RxDiag.init(
+        {title: "Delay (500ms)"},                // naslov
+        function (in) { return in.delay(500) },  // kombinator/operator za prikaz
+        in1                                      // definicija ulaznog toka
+    );
+</script>
+
+```
 
 ## Primer
 
