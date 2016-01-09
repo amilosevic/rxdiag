@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Rx Diag (JS) - Showcase</title>
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.time.js"></script>
+    <script src="../rx.diag.js"></script>
+</head>
+<body>
+<h1>Rx Diag - Examples</h1>
+
+<script>
+
+    // 4 events, onComplete
+    var input1 = [
+        {shape: "marble", color: "blue", "tick": 1},
+        {shape: "marble", color: "green", "tick": 3},
+        {shape: "marble", color: "gray", "tick": 4},
+        {shape: "marble", color: "magenta", "tick": 6},
+        {shape: "complete", color: undefined, "tick": 8}
+    ];
+
+    // 3 events, onError
+    var input2 = [
+        {shape: "diamond", color: "green", "tick": 2},
+        {shape: "diamond", color: "red", "tick": 4},
+        {shape: "diamond", color: "yellow", "tick": 5},
+        {shape: "error", color: undefined, "tick": 8}
+    ];
+
+    // 3 events, onComplete
+    var input3 = [
+        {shape: "square", color: "brown", "tick": 0},
+        {shape: "square", color: "navy", "tick": 7},
+        {shape: "square", color: "red", "tick": 9},
+        {shape: "complete", color: undefined, "tick": 10}
+    ];
+</script>
+
+
+<script>
+    RxDiag.init({title: "Delay (500ms) err"}, function (inObs) { return inObs.delay(500) }, input2);
+    RxDiag.init({title: "Delay (500ms)"}, function (inObs) { return inObs.delay(500) }, input1); //
+    RxDiag.init({}, function (inObs) { return inObs.delay(1600) }, input1); //
+</script>
+
+<hr/>
+
+<script>
+    RxDiag.init({title: "Merge()"}, function (inObs0, inObs1) { return Rx.Observable.merge(inObs0, inObs1.delay(2)) }, input1, input2); //
+    RxDiag.init({title: "Merge()"}, function (inObs0, inObs1, inObs2) { return Rx.Observable.merge(inObs0, inObs1.delay(2), inObs2.delay(4))}, input1, input2, input3); //
+    RxDiag.init({title: "Just()"}, function () { return Rx.Observable.just({shape: "marble", color: "green", tick: "0"}).delay(3000)}); //
+</script>
+
+</body>
+</html>

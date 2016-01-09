@@ -19,7 +19,6 @@ RxDiag = (function () {
         var args = Array.prototype.slice.call(arguments, 2);
 
         // draw background and initialize draw surface
-
         var delta = (args.length - 1) * 120;
 
         this.svg = d3.select("body").append("svg")
