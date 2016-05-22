@@ -22,7 +22,14 @@ RxDiag = (function () {
 
         var delta = (args.length - 1) * 120;
 
-        this.svg = d3.select("body").append("svg")
+        var container = this.props.container;
+
+        var context = d3.select("body");
+        if (container) {
+            context = d3.select(container);
+        }
+
+        this.svg = context.append("svg")
             .attr("width", width)
             .attr("height", height + delta);
 
