@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Rx Diag (JS) - Delay(500ms) err</title>
+    <title>Rx Diag (JS) - Delay(500ms)</title>
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.js"></script>
@@ -18,11 +18,11 @@
         {shape: "marble", color: "green", "tick": 3},
         {shape: "marble", color: "gray", "tick": 4},
         {shape: "marble", color: "magenta", "tick": 6},
-        {shape: "error", color: undefined, "tick": 8}
+        {shape: "complete", color: undefined, "tick": 8}
     ];
 
     RxDiag.init(
-        {title: "Delay (500ms) err"},                       // naslov
+        {title: "Delay (500ms)"},                       // naslov
         function (in1) { return in1.delay(500); },      // kombinator/operator za prikaz
         in1                                             // definicija ulaznog toka
     );
