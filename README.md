@@ -24,8 +24,8 @@
 ...
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.2/rx.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.2/rx.time.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.time.js"></script>
 <script src="./rx.diag.js"></script>
 
 <body>
