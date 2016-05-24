@@ -50,7 +50,7 @@
 
 ## Primer
 
-Primer rada kombinatora [**Delay**](http://reactivex.io/documentation/operators/delay.html) sa parametrom 500ms. Ulazni tok se okončava izuzetkom. http://rx.eu01.aws.af.cm/delay500.html 
+Primer rada kombinatora [**Delay**](http://reactivex.io/documentation/operators/delay.html) sa parametrom 500ms. Ulazni tok se okončava izuzetkom. http://amilosevic.github.io/sample/rxdiag/delay.html 
 
 ## Linkovi
  - http://www.w3schools.com/svg/

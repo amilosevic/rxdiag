@@ -19,21 +19,29 @@ RxDiag = (function () {
         var args = Array.prototype.slice.call(arguments, 2);
 
         // draw background and initialize draw surface
-        var delta = (args.length - 1) * 120;
 
-        this.svg = d3.select("body").append("svg")
+        var delta = (args.length - 1) * 60;
+
+        var container = this.props.container;
+
+        var context = d3.select("body");
+        if (container) {
+            context = d3.select(container);
+        }
+
+        this.svg = context.append("svg")
             .attr("width", width)
             .attr("height", height + delta);
 
         var svg1 = this.svg;
 
         args.forEach(function (ob, index) {
-            eventline(svg1, 100 + index*120);
+            eventline(svg1, 50 + index * 60 );
         });
 
-        eventline(this.svg, 500 + delta) ;
+        eventline(this.svg, 250 + delta) ;
 
-        var cbox = combinator(this.svg, 310 + delta, (this.props.title || "..."));
+        var cbox = combinator(this.svg, 155 + delta, (this.props.title || "..."));
 
         // initialize
         function project(in1) {
@@ -58,7 +66,7 @@ RxDiag = (function () {
 
         var outobs = transform();
 
-
+        /*
         this.inObs.forEach(function (obs, index) {
             obs.subscribe(function (e) {
                 console.info("in" + index + ": " + e.tick);
@@ -72,58 +80,64 @@ RxDiag = (function () {
         }, function (e) {
         }, function (e) {
         });
+        */
 
 
 
         // render observables
         var ref = new Date().getTime();
 
-        function frame(e) {
-            return ((e.timestamp - ref) / 100).toFixed(0);
+        var frame = function() {
+            var timestamp = arguments.length == 0 ? new Date().getTime() : arguments[0].timestamp;
+            return ((timestamp - ref) / 200).toFixed(0);
+        };
+
+        function x(fr) {
+            return 25 + 10 * fr;
         }
 
 
         // subscribe and print
         this.inObs.forEach(function (obs, index) {
-            var y = 100 + index*120;
+            var y = 50 + index*60;
 
             obs.timestamp().subscribe(
                 // onNext
-                function (e) {
-                    var fr = frame(e);
-                    drawEv(svg1, e.value, 50 + 10 * fr, y);
+                function (i) {
+                    var fr = frame(i);
+                    drawEv(svg1, i.value, x(fr), y);
                 },
                 // onError
                 function (e) {
-                    var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
-                    error(svg1, 50 + 10 * frame, y);
+                    var fr = frame();
+                    error(svg1, x(fr), y);
                 },
                 // onComplete
-                function (e) {
-                    var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
-                    complete(svg1, 50 + 10 * frame, y);
+                function () {
+                    var fr = frame();
+                    complete(svg1, x(fr), y);
                 }
             );
         });
 
         // output y coordinate
-        var outy = 500 + delta;
+        var y = 250 + delta;
 
         outobs.timestamp().subscribe(
         // onNext
-            function (e) {
-                var fr = frame(e);
-                drawEv(svg1, e.value, 50 + 10 * fr, outy);
+            function (i) {
+                var fr = frame(i);
+                drawEv(svg1, i.value, x(fr), y);
             },
             // onError
             function (e) {
-                var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
-                error(svg1, 50 + 10 * frame, outy);
+                var fr = frame();
+                error(svg1, x(fr), y);
             },
             // onComplete
-            function (e) {
-                var frame = ((new Date().getTime() - ref) / 100).toFixed(0);
-                complete(svg1, 50 + 10 * frame, outy);
+            function () {
+                var fr = frame();
+                complete(svg1, x(fr), y);
             }
         );
 
@@ -132,10 +146,10 @@ RxDiag = (function () {
 
     // -- private --
 
-    var width = 1280;
-    var height = 620;
+    var width = 640;
+    var height = 320;
 
-    var sw = 6;
+    var sw = 3;
     var r = 1;
 
 
@@ -170,7 +184,7 @@ RxDiag = (function () {
     // elements
 
     function marble(svg, x, y, color) {
-        var r = 45;
+        var r = 22;
         return svg.append("circle")
             .attr("cx", x).attr("cy", y)
             .attr("r", r)
@@ -182,7 +196,7 @@ RxDiag = (function () {
     }
 
     function square(svg, x, y, color) {
-        var d = 90;
+        var d = 45;
         return svg.append("rect")
             .attr("x", x - d / 2).attr("y", y - d / 2)
             .attr("height", d).attr("width", d)
@@ -195,7 +209,7 @@ RxDiag = (function () {
     }
 
     function diamond(svg, x, y, color) {
-        var d = 60;
+        var d = 30;
         return svg.append("rect")
             .attr("x", x - d / 2).attr("y", y - d / 2)
             .attr("height", d).attr("width", d)
@@ -209,7 +223,7 @@ RxDiag = (function () {
     }
 
     function pentagon(svg, x, y, color) {
-        var dm = 90, r = dm / 2;
+        var dm = 45, r = dm / 2;
 
         var a = Math.round(r * 0.8);
         var b = Math.round(r * 0.59);
@@ -234,7 +248,7 @@ RxDiag = (function () {
     }
 
     function triangle(svg, x, y, color) {
-        var dm = 90, r = dm / 2;
+        var dm = 45, r = dm / 2;
 
         var s = r * 2 * 0.86;
 
@@ -258,7 +272,7 @@ RxDiag = (function () {
 
     function eventline(svg, y) {
         return svg.append("line")
-            .attr("x1", 15).attr("x2", width - 15)
+            .attr("x1", 6).attr("x2", width - 6)
             .attr("y1", y).attr("y2", y)
             .style("stroke-width", sw)
             .style("stroke", "black")
@@ -266,11 +280,11 @@ RxDiag = (function () {
     }
 
     function combinator(svg, y, text) {
-        h = 130;
-        w = width - 2 * 15;
+        h = 65;
+        w = width - 2 * 7;
         // @todo: make this a group
         rect = svg.append("rect")
-            .attr("x", 15).attr("y", y - h / 2)
+            .attr("x", 7).attr("y", y - h / 2)
             .attr("height", h).attr("width", w)
             .attr("rx", r).attr("ry", r)
             .style("fill", "white")
@@ -279,10 +293,10 @@ RxDiag = (function () {
         ;
 
         svg.append("text")
-            .attr("x", width / 2).attr("y", y + 15)
+            .attr("x", width / 2).attr("y", y + 6)
             .text(text)
             .attr("font-family", "sans-serif")
-            .attr("font-size", "48px")
+            .attr("font-size", "24px")
             .attr("font-weight", "bold")
             .attr("text-anchor", "middle");
 
@@ -291,7 +305,7 @@ RxDiag = (function () {
     }
 
     function complete(svg, x, y) {
-        var v = 40;
+        var v = 20;
         return svg.append("line")
             .attr("x1", x).attr("x2", x)
             .attr("y1", y - v).attr("y2", y + v)
@@ -301,7 +315,7 @@ RxDiag = (function () {
     }
 
     function error(svg, x, y) {
-        var v = 40;
+        var v = 20;
         var g = svg.append("g");
         g.append("line")
             .attr("x1", x - v).attr("x2", x + v)
