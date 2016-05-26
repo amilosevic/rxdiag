@@ -6,45 +6,45 @@ RxDiag = (function () {
     // -- public --
 
     rxDiag.init = function (props, op, input) {
-        this.props = props || {};
+        props = props || {};
 
-        var input1 = input || [];
+        var title = props.title || '...';
+        var container = props.container;
+        var inputs = Array.prototype.slice.call(arguments, 2);
 
-        this.inObs = [];
+        var painter = new RxAnimator(title, container, op, inputs)
+    };
 
-        // set up combinator/operator
-        this.op = op;
 
-        // extract inputs
-        var args = Array.prototype.slice.call(arguments, 2);
+    function RxAnimator (title, container, op, inputs) {
+
+        // current reference point
+        const ref = new Date().getTime();
+
+        var self = this; // for closures
+
+        var delta = (inputs.length - 1) * 60;
 
         // draw background and initialize draw surface
+        this.surface(container, delta);
 
-        var delta = (args.length - 1) * 60;
+        // set up ombinator/operator
+        this.op = op;
 
-        var container = this.props.container;
-
-        var context = d3.select("body");
-        if (container) {
-            context = d3.select(container);
-        }
-
-        this.svg = context.append("svg")
-            .attr("width", width)
-            .attr("height", height + delta);
-
-        var svg1 = this.svg;
-
-        args.forEach(function (ob, index) {
-            eventline(svg1, 50 + index * 60 );
+        // inputs eventlines
+        inputs.forEach(function (ob, index) {
+            self.eventline(50 + index * 60);
         });
 
-        eventline(this.svg, 250 + delta) ;
+        // output eventline
+        this.eventline(250 + delta) ;
 
-        var cbox = combinator(this.svg, 155 + delta, (this.props.title || "..."));
+        // combinator box
+        this.combinator(155 + delta, title);
 
-        // initialize
-        function project(in1) {
+
+        // projection in time
+        var inobs = inputs.map(function (in1) {
             return Rx.Observable.from(in1).flatMap(function (e) {
                 if (e.shape == 'complete') {
                     return Rx.Observable.empty().delay(e.tick * 1000);
@@ -54,95 +54,132 @@ RxDiag = (function () {
                     return Rx.Observable.just(e).delay(e.tick * 1000);
                 }
             });
-        }
-
-
-        this.inObs = args.map(project);
-
-        // apply combinator
-        function transform() {
-            return rxDiag.op.apply(null, rxDiag.inObs);
-        }
-
-        var outobs = transform();
-
-        /*
-        this.inObs.forEach(function (obs, index) {
-            obs.subscribe(function (e) {
-                console.info("in" + index + ": " + e.tick);
-            }, function (e) {
-            }, function (e) {
-            });
         });
 
-        outobs.subscribe(function (e) {
-            console.info("out: " + e.tick);
-        }, function (e) {
-        }, function (e) {
-        });
-        */
+        // transformation
+        var outobs = this.transform(inobs);
 
-
-
-        // render observables
-        var ref = new Date().getTime();
 
         var frame = function() {
             var timestamp = arguments.length == 0 ? new Date().getTime() : arguments[0].timestamp;
             return ((timestamp - ref) / 200).toFixed(0);
         };
 
-        function x(fr) {
+        var x = function(fr) {
             return 25 + 10 * fr;
-        }
+        };
+
+        var y = function() {
+            return arguments.length == 0 ? 250 + delta : 50 + arguments[0]*60;
+        };
 
 
-        // subscribe and print
-        this.inObs.forEach(function (obs, index) {
-            var y = 50 + index*60;
+
+        // subscribe inputs to projected inputs
+        inobs.forEach(function (obs, index) {
 
             obs.timestamp().subscribe(
                 // onNext
                 function (i) {
                     var fr = frame(i);
-                    drawEv(svg1, i.value, x(fr), y);
+                    self.next(x(fr), y(index), i.value);
                 },
                 // onError
                 function (e) {
                     var fr = frame();
-                    error(svg1, x(fr), y);
+                    self.error(x(fr), y(index));
                 },
                 // onComplete
                 function () {
                     var fr = frame();
-                    complete(svg1, x(fr), y);
+                    self.complete(x(fr), y(index));
                 }
             );
         });
 
-        // output y coordinate
-        var y = 250 + delta;
-
+        // subscribe to output
         outobs.timestamp().subscribe(
-        // onNext
+            // onNext
             function (i) {
                 var fr = frame(i);
-                drawEv(svg1, i.value, x(fr), y);
+                self.next(x(fr), y(), i.value);
             },
             // onError
             function (e) {
                 var fr = frame();
-                error(svg1, x(fr), y);
+                self.error(x(fr), y());
             },
             // onComplete
             function () {
                 var fr = frame();
-                complete(svg1, x(fr), y);
+                self.complete(x(fr), y());
             }
         );
 
 
+        //Rx.Observable.empty().delay(15*1000).subscribe(
+        //    function (x) {
+        //        //
+        //    },
+        //    function (e) {
+        //        //
+        //    },
+        //    function () {
+        //        alert("!");
+        //    }
+        //);
+
+
+        //this.inobs.forEach(function (obs, index) {
+        //    obs.subscribe(function (e) {
+        //        console.info("in" + index + ": " + e.tick);
+        //    }, function (e) {
+        //    }, function (e) {
+        //    });
+        //});
+        //
+        //outobs.subscribe(function (e) {
+        //    console.info("out: " + e.tick);
+        //}, function (e) {
+        //}, function (e) {
+        //});
+
+
+
+
+    }
+
+    RxAnimator.prototype.transform = function (inObs) {
+        return this.op.apply(null, inObs);
     };
+
+    RxAnimator.prototype.surface = function (container, delta) {
+       this.canvas = canvas(container, delta);
+    };
+
+    RxAnimator.prototype.combinator = function (y, title) {
+        drawCombinator(this.canvas, y, (title || "..."));
+    };
+
+    RxAnimator.prototype.eventline = function(y) {
+        drawEventline(this.canvas, y) ;
+    };
+
+    RxAnimator.prototype.next = function (x, y, shape) {
+        drawEv(this.canvas, shape, x, y);
+    };
+
+    RxAnimator.prototype.error = function (x, y) {
+        drawError(this.canvas, x, y);
+    };
+
+    RxAnimator.prototype.complete = function (x, y) {
+        drawComplete(this.canvas, x, y);
+    };
+
+
+
+
 
     // -- private --
 
@@ -152,36 +189,19 @@ RxDiag = (function () {
     var sw = 3;
     var r = 1;
 
-
-    /*
-     var defs = svg.append("defs");
-
-     // shadow filter definition
-
-     var filter = defs.append("filter")
-     .attr("id", "shadow")
-     .attr("height", "185%")
-     .attr("width", "165%");
-
-     filter.append("feOffset")
-     .attr("in", "SourceAlpha")
-     .attr("dx", -7)
-     .attr("dy", 7)
-     .attr("result", "offset");
-
-     filter.append("feGaussianBlur")
-     .attr("in", "offset")
-     .attr("stdDeviation", 3)
-     .attr("result", "blur");
-
-     filter.append("feBlend")
-     .attr("in", "SourceGraphic")
-     .attr("in2", "blur")
-     .attr("mode", "normal");
-
-     */
-
     // elements
+
+    function canvas(container, delta) {
+        var context = d3.select("body");
+        if (container) {
+            context = d3.select(container);
+        }
+
+        return context.append("svg")
+            .attr("width", width)
+            .attr("height", height + delta);
+    }
+
 
     function marble(svg, x, y, color) {
         var r = 22;
@@ -243,7 +263,8 @@ RxDiag = (function () {
             .style("fill", color)
             .style("stroke-linejoin", "round")
             .style("stroke-width", sw)
-            .style("stroke", "black");
+            .style("stroke", "black")
+            ;
 
     }
 
@@ -266,11 +287,12 @@ RxDiag = (function () {
             .style("fill", color)
             .style("stroke-linejoin", "round")
             .style("stroke-width", sw)
-            .style("stroke", "black");
+            .style("stroke", "black")
+            ;
 
     }
 
-    function eventline(svg, y) {
+    function drawEventline(svg, y) {
         return svg.append("line")
             .attr("x1", 6).attr("x2", width - 6)
             .attr("y1", y).attr("y2", y)
@@ -279,7 +301,7 @@ RxDiag = (function () {
             ;
     }
 
-    function combinator(svg, y, text) {
+    function drawCombinator(svg, y, text) {
         h = 65;
         w = width - 2 * 7;
         // @todo: make this a group
@@ -290,7 +312,7 @@ RxDiag = (function () {
             .style("fill", "white")
             .style("stroke-width", sw)
             .style("stroke", "black")
-        ;
+            ;
 
         svg.append("text")
             .attr("x", width / 2).attr("y", y + 6)
@@ -304,7 +326,7 @@ RxDiag = (function () {
 
     }
 
-    function complete(svg, x, y) {
+    function drawComplete(svg, x, y) {
         var v = 20;
         return svg.append("line")
             .attr("x1", x).attr("x2", x)
@@ -314,7 +336,7 @@ RxDiag = (function () {
             ;
     }
 
-    function error(svg, x, y) {
+    function drawError(svg, x, y) {
         var v = 20;
         var g = svg.append("g");
         g.append("line")
@@ -332,22 +354,17 @@ RxDiag = (function () {
     function drawEv(svg, s, x, y) {
         switch (s.shape) {
             case 'marble':
-                marble(svg, x, y, s.color);
-                break;
+                return marble(svg, x, y, s.color);
             case 'square':
-                square(svg, x, y, s.color);
-                break;
+                return square(svg, x, y, s.color);
             case 'pentagon':
-                pentagon(svg, x, y, s.color);
-                break;
+                return pentagon(svg, x, y, s.color);
             case 'diamond':
-                diamond(svg, x, y, s.color);
-                break;
+                return diamond(svg, x, y, s.color);
             case 'triangle':
-                triangle(svg, x, y, s.color);
-                break;
+                return triangle(svg, x, y, s.color);
             default :
-                console.error("unknown element" + e.shape);
+                console.error("unknown element" + s.shape);
         }
     }
 
