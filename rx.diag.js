@@ -18,18 +18,21 @@ RxDiag = (function () {
 
     function RxAnimator (title, container, op, inputs) {
 
-        // current reference point
-        const ref = new Date().getTime();
 
         var self = this; // for closures
 
-        var delta = (inputs.length - 1) * 60;
+        this.delta = (inputs.length - 1) * 60;
 
         // draw background and initialize draw surface
-        this.surface(container, delta);
+        this.surface(container);
 
         // set up ombinator/operator
         this.op = op;
+
+        this.cinputs = inputs.length;
+
+        this.subscriptions = [];
+        this.elements = [];
 
         // inputs eventlines
         inputs.forEach(function (ob, index) {
@@ -37,10 +40,10 @@ RxDiag = (function () {
         });
 
         // output eventline
-        this.eventline(250 + delta) ;
+        this.eventline(250 + this.delta) ;
 
         // combinator box
-        this.combinator(155 + delta, title);
+        this.combinator(155 + this.delta, title);
 
 
         // projection in time
@@ -56,146 +59,106 @@ RxDiag = (function () {
             });
         });
 
-        // transformation
         var outobs = this.transform(inobs);
 
+        this.start(inobs, outobs);
+        // transformation
+        
+        this.canvas.on('click', function() {
+            //console.log("f!");
+            self.start(inobs, outobs);
+        });
 
-        var frame = function() {
-            var timestamp = arguments.length == 0 ? new Date().getTime() : arguments[0].timestamp;
-            return ((timestamp - ref) / 200).toFixed(0);
-        };
-
-        var ex = function(fr, index) {
-            return 25 + 10 * fr - (index == undefined ? 0 : index);
-        };
-
-        var ey = function() {
-            return arguments.length == 0 ? 250 + delta : 50 + arguments[0]*60;
-        };
-
-        var ay = function() {
-            return arguments.length == 0 ? 130 + inputs.length*60 : 120 + delta;
-        };
+    }
 
 
+    RxAnimator.prototype.start = function(inobs, outobs) {
 
+        this.clean();
+
+        this.ref = new Date().getTime();
+        var self = this;
 
         // subscribe inputs to projected inputs
         inobs.forEach(function (obs, index) {
-
-            obs.timestamp().subscribe(
+             var s = obs.timestamp().subscribe(
                 // onNext
                 function (i) {
-                    var fr = frame(i);
-                    var x = ex(fr);
-                    var y = ey(index);
+                    var fr = self.frame(i);
+                    var x = self.ex(fr);
+                    var y = self.ey(index);
                     self.next(x, y, i.value);
-
                     var y1 = y + 20 + sw;
-                    var y2 = ay(index);
+                    var y2 = self.ay(index);
                     self.arrow(x, y1, x, y2);
                 },
                 // onError
                 function (e) {
-                    var fr = frame();
-                    var x = ex(fr);
-                    var y = ey(index);
+                    var fr = self.frame();
+                    var x = self.ex(fr);
+                    var y = self.ey(index);
                     self.error(x, y);
-
                     var y1 = y + 20 + sw;
-                    var y2 = ay(index);
+                    var y2 = self.ay(index);
                     self.arrow(x, y1, x, y2);
                 },
                 // onComplete
                 function () {
-                    var fr = frame();
-                    var x = ex(fr);
-                    var y = ey(index);
+                    var fr = self.frame();
+                    var x = self.ex(fr);
+                    var y = self.ey(index);
                     self.complete(x, y);
-
                     var y1 = y + 20 + sw;
-                    var y2 = ay(index);
+                    var y2 = self.ay(index);
                     self.arrow(x, y1, x, y2);
                 }
             );
-        });
 
+            self.subscriptions.push(s);
+        });
         // subscribe to output
-        outobs.timestamp().subscribe(
+        var s = outobs.timestamp().subscribe(
             // onNext
             function (i) {
-                var fr = frame(i);
-                var x = ex(fr);
-                var y = ey();
+                var fr = self.frame(i);
+                var x = self.ex(fr);
+                var y = self.ey();
                 self.next(x, y, i.value);
-
-                var y1 = ay();
+                var y1 = self.ay();
                 var y2 = y - 20 - sw;
                 self.arrow(x, y1, x, y2);
             },
             // onError
             function (e) {
-                var fr = frame();
-                var x = ex(fr);
-                var y = ey();
+                var fr = self.frame();
+                var x = self.ex(fr);
+                var y = self.ey();
                 self.error(x, y);
-
-                var y1 = ay();
+                var y1 = self.ay();
                 var y2 = y - 20 - sw;
                 self.arrow(x, y1, x, y2);
             },
             // onComplete
             function () {
-                var fr = frame();
-                var x = ex(fr);
-                var y = ey();
+                var fr = self.frame();
+                var x = self.ex(fr);
+                var y = self.ey();
                 self.complete(x, y);
-
-                var y1 = ay();
+                var y1 = self.ay();
                 var y2 = y - 20 - sw;
                 self.arrow(x, y1, x, y2);
             }
         );
 
-
-        //Rx.Observable.empty().delay(15*1000).subscribe(
-        //    function (x) {
-        //        //
-        //    },
-        //    function (e) {
-        //        //
-        //    },
-        //    function () {
-        //        alert("!");
-        //    }
-        //);
-
-
-        //this.inobs.forEach(function (obs, index) {
-        //    obs.subscribe(function (e) {
-        //        console.info("in" + index + ": " + e.tick);
-        //    }, function (e) {
-        //    }, function (e) {
-        //    });
-        //});
-        //
-        //outobs.subscribe(function (e) {
-        //    console.info("out: " + e.tick);
-        //}, function (e) {
-        //}, function (e) {
-        //});
-
-
-
-
-    }
+        self.subscriptions.push(s);
+    };
 
     RxAnimator.prototype.transform = function (inObs) {
         return this.op.apply(null, inObs);
     };
 
-    RxAnimator.prototype.surface = function (container, delta) {
-       this.canvas = canvas(container, delta);
+    RxAnimator.prototype.surface = function (container) {
+       this.canvas = canvas(container, this.delta);
     };
 
     RxAnimator.prototype.combinator = function (y, title) {
@@ -207,20 +170,57 @@ RxDiag = (function () {
     };
 
     RxAnimator.prototype.arrow = function (x1, y1, x2, y2) {
-        drawArrow(this.canvas, x1, y1, x2, y2, "black");
+        this.collect(drawArrow(this.canvas, x1, y1, x2, y2, "black"));
     };
 
     RxAnimator.prototype.next = function (x, y, shape) {
-        drawEv(this.canvas, shape, x, y);
+        this.collect(drawEv(this.canvas, shape, x, y));
     };
 
     RxAnimator.prototype.error = function (x, y) {
-        drawError(this.canvas, x, y);
+        this.collect(drawError(this.canvas, x, y));
     };
 
     RxAnimator.prototype.complete = function (x, y) {
-        drawComplete(this.canvas, x, y);
+        this.collect(drawComplete(this.canvas, x, y));
     };
+
+
+    RxAnimator.prototype.frame = function () {
+        var timestamp = arguments.length == 0 ? new Date().getTime() : arguments[0].timestamp;
+        return ((timestamp - this.ref) / 200).toFixed(0);
+    };
+
+    RxAnimator.prototype.ex = function (fr, index) {
+        return 25 + 10 * fr - (index == undefined ? 0 : index);
+    };
+
+    RxAnimator.prototype.ey = function () {
+        return arguments.length == 0 ? 250 + this.delta : 50 + arguments[0] * 60;
+    };
+
+    RxAnimator.prototype.ay = function () {
+        return arguments.length == 0 ? 130 + this.cinputs * 60 : 120 + this.delta;
+    };
+
+    RxAnimator.prototype.collect = function(e) {
+        this.elements.push(e.pop());
+    };
+
+    RxAnimator.prototype.clean = function() {
+
+        this.subscriptions.forEach(function (s) {
+            s.dispose();
+        });
+
+        this.subscriptions = [];
+
+        this.elements.forEach(function (e) {
+            remove(e);
+        });
+        this.elements = [];
+    };
+
 
 
 
@@ -234,7 +234,10 @@ RxDiag = (function () {
     var sw = 3;
     var r = 1;
 
-    // elements
+    // d3/svg drawing methods elements
+    function remove(e) {
+        d3.selectAll(e).remove();
+    }
 
     function canvas(container, delta) {
         var context = d3.select("body");
@@ -404,7 +407,7 @@ RxDiag = (function () {
             .attr("d", "M" + x1 + "," + y1 + "L" + x2 + "," + y2)
             .attr("stroke-dasharray", "2,7")
             .style("stroke-width", sw - 2 > 0 ? sw - 2 : 1)
-            .style("stroke", "black")
+            .style("stroke", color)
             .style("marker-end", "url(#mArrow)");
 
         return g;
