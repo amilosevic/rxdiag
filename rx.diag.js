@@ -127,7 +127,7 @@ RxDiag = (function () {
                 var fr = frame(i);
                 var x = ex(fr);
                 var y = ey();
-                self.next(ex(fr), ey(), i.value);
+                self.next(x, y, i.value);
 
                 var y1 = ay();
                 var y2 = y - 20 - sw;
