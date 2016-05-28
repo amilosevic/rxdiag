@@ -12,7 +12,7 @@ RxDiag = (function () {
         var container = props.container;
         var inputs = Array.prototype.slice.call(arguments, 2);
 
-        var painter = new RxAnimator(title, container, op, inputs)
+        var animator = new RxAnimator(title, container, op, inputs)
     };
 
 
@@ -65,13 +65,18 @@ RxDiag = (function () {
             return ((timestamp - ref) / 200).toFixed(0);
         };
 
-        var x = function(fr) {
-            return 25 + 10 * fr;
+        var ex = function(fr, index) {
+            return 25 + 10 * fr - (index == undefined ? 0 : index);
         };
 
-        var y = function() {
+        var ey = function() {
             return arguments.length == 0 ? 250 + delta : 50 + arguments[0]*60;
         };
+
+        var ay = function() {
+            return arguments.length == 0 ? 130 + inputs.length*60 : 120 + delta;
+        };
+
 
 
 
@@ -82,17 +87,35 @@ RxDiag = (function () {
                 // onNext
                 function (i) {
                     var fr = frame(i);
-                    self.next(x(fr), y(index), i.value);
+                    var x = ex(fr);
+                    var y = ey(index);
+                    self.next(x, y, i.value);
+
+                    var y1 = y + 20 + sw;
+                    var y2 = ay(index);
+                    self.arrow(x, y1, x, y2);
                 },
                 // onError
                 function (e) {
                     var fr = frame();
-                    self.error(x(fr), y(index));
+                    var x = ex(fr);
+                    var y = ey(index);
+                    self.error(x, y);
+
+                    var y1 = y + 20 + sw;
+                    var y2 = ay(index);
+                    self.arrow(x, y1, x, y2);
                 },
                 // onComplete
                 function () {
                     var fr = frame();
-                    self.complete(x(fr), y(index));
+                    var x = ex(fr);
+                    var y = ey(index);
+                    self.complete(x, y);
+
+                    var y1 = y + 20 + sw;
+                    var y2 = ay(index);
+                    self.arrow(x, y1, x, y2);
                 }
             );
         });
@@ -102,17 +125,35 @@ RxDiag = (function () {
             // onNext
             function (i) {
                 var fr = frame(i);
-                self.next(x(fr), y(), i.value);
+                var x = ex(fr);
+                var y = ey();
+                self.next(ex(fr), ey(), i.value);
+
+                var y1 = ay();
+                var y2 = y - 20 - sw;
+                self.arrow(x, y1, x, y2);
             },
             // onError
             function (e) {
                 var fr = frame();
-                self.error(x(fr), y());
+                var x = ex(fr);
+                var y = ey();
+                self.error(x, y);
+
+                var y1 = ay();
+                var y2 = y - 20 - sw;
+                self.arrow(x, y1, x, y2);
             },
             // onComplete
             function () {
                 var fr = frame();
-                self.complete(x(fr), y());
+                var x = ex(fr);
+                var y = ey();
+                self.complete(x, y);
+
+                var y1 = ay();
+                var y2 = y - 20 - sw;
+                self.arrow(x, y1, x, y2);
             }
         );
 
@@ -165,6 +206,10 @@ RxDiag = (function () {
         drawEventline(this.canvas, y) ;
     };
 
+    RxAnimator.prototype.arrow = function (x1, y1, x2, y2) {
+        drawArrow(this.canvas, x1, y1, x2, y2, "black");
+    };
+
     RxAnimator.prototype.next = function (x, y, shape) {
         drawEv(this.canvas, shape, x, y);
     };
@@ -197,9 +242,26 @@ RxDiag = (function () {
             context = d3.select(container);
         }
 
-        return context.append("svg")
+        var svg = context.append("svg")
             .attr("width", width)
             .attr("height", height + delta);
+
+        var defs = svg.append("defs");
+
+        var marker = defs.append("marker")
+            .attr("id", "mArrow")
+            .attr('markerHeight', 13)
+            .attr('markerWidth', 13)
+            //.attr('markerUnits', 2)
+            .attr('orient', 'auto')
+            .attr('refX', 10)
+            .attr('refY', 6);
+
+        marker.append("path")
+            .attr("d", "M2,2 L2,10 L10,6 L2,2 Z")
+            .style("stroke", "black");
+
+        return svg;
     }
 
 
@@ -302,8 +364,8 @@ RxDiag = (function () {
     }
 
     function drawCombinator(svg, y, text) {
-        h = 65;
-        w = width - 2 * 7;
+        var h = 65;
+        var w = width - 2 * 7;
         // @todo: make this a group
         rect = svg.append("rect")
             .attr("x", 7).attr("y", y - h / 2)
@@ -334,6 +396,19 @@ RxDiag = (function () {
             .style("stroke-width", sw)
             .style("stroke", "black")
             ;
+    }
+
+    function drawArrow(svg, x1, y1, x2, y2, color) {
+        var g = svg.append("g");
+        g.append("path")
+            .attr("d", "M" + x1 + "," + y1 + "L" + x2 + "," + y2)
+            .attr("stroke-dasharray", "2,7")
+            .style("stroke-width", sw - 2 > 0 ? sw - 2 : 1)
+            .style("stroke", "black")
+            .style("marker-end", "url(#mArrow)");
+
+        return g;
+
     }
 
     function drawError(svg, x, y) {
