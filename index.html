@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.time.js"></script>
     <script src="./rx.diag.js"></script>
+    <script src="./rx.morse.complete.js"></script>
 </head>
 <body>
 <h1>Rx Diag - Examples</h1>
@@ -59,21 +60,152 @@
         {shape: "square", color: "red", "tick": 9},
         {shape: "complete", color: undefined, "tick": 10}
     ];
+
+    var input4 = [
+        {shape: "square", color: "brown", "tick": 0},
+        {shape: "square", color: "navy", "tick": 2},
+        {shape: "complete", color: undefined, "tick": 3}
+    ];
+
+    var input5 = [
+        {shape: "marble", color: "magenta", "tick": 1},
+        {shape: "marble", color: "red", "tick": 3},
+        {shape: "complete", color: undefined, "tick": 4}
+    ];
+
+    var input6 = [
+        {shape: "square", color: "brown", "tick": 1},
+        {shape: "square", color: "navy", "tick": 4},
+        {shape: "square", color: "blue", "tick": 5},
+        {shape: "complete", color: undefined, "tick": 6}
+    ];
+
+    var input7 = [
+        {shape: "square", color: "brown", "tick": 1},
+        {shape: "square", color: "navy", "tick": 4},
+        {shape: "square", color: "orange", "tick": 5},
+        {shape: "complete", color: undefined, "tick": 9}
+    ];
+
+
+    var input8 = [
+        {shape: "square", color: "blue", "tick": 0},
+        {shape: "square", color: "green", "tick": 2},
+        {shape: "square", color: "red", "tick": 4},
+        {shape: "complete", color: undefined, "tick": 6}
+    ];
+
+    var input9 = [
+        {shape: "square", color: "blue", "tick": 0, value: 2},
+        {shape: "square", color: "green", "tick": 2, value: 3},
+        {shape: "square", color: "red", "tick": 4, value: 4},
+        {shape: "square", color: "yellow", "tick": 5, value: 1},
+        {shape: "square", color: "black", "tick": 7, value:2},
+        {shape: "complete", color: undefined, "tick": 8}
+    ];
+
+
+
+
+
 </script>
 
 
 <script>
     //RxDiag.init({title: "Delay (500ms) err"}, function (inObs) { return inObs.delay(500) }, input2);
-    //RxDiag.init({title: "Delay (500ms)", container: document.getElementById('grey')}, function (inObs) { return inObs.delay(500) }, input1); //
+    //
     //RxDiag.init({}, function (inObs) { return inObs.delay(1600) }, input1); //
 </script>
 
 <hr/>
 
 <script>
-    RxDiag.init({title: "Merge()"}, function (inObs0, inObs1) { return Rx.Observable.merge(inObs0, inObs1.delay(2)) }, input1, input2); //
-    RxDiag.init({title: "Merge()"}, function (inObs0, inObs1, inObs2) { return Rx.Observable.merge(inObs0, inObs1.delay(2), inObs2.delay(4))}, input1, input2, input3); //
-    //RxDiag.init({title: "Just()"}, function () { return Rx.Observable.just({shape: "marble", color: "green", tick: "0"}).delay(3000)}); //
+    RxDiag.init({title: "Rx.Observable.merge(a,b)"}, function (inObs0, inObs1) { return Rx.Observable.merge(inObs0, inObs1.delay(2)) }, input1, input2); //
+
+    RxDiag.init({title: "Rx.Observable.empty()", offset: 300, delay: 1000},
+            function () { return Rx.Observable.empty()}
+    ); //
+    RxDiag.init({title: "Rx.Observable.error(new Error)", offset: 300, delay: 1000},
+            function () { return Rx.Observable.throw(new Error())}
+    ); //
+
+    Rx.Observable.from("foo").subscribe(function(x) {console.log(x)});
+
+    RxDiag.init({title: "Rx.Observable.just(...)", outfix: true, delay: 1000, offset: 300},
+            function () { return Rx.Observable.just({shape: "marble", color: "green", tick: 0})}
+    ); //
+
+    RxDiag.init({title: "Rx.Observable.from('foo')", outfix: true, spread: true, offset: 300, delay: 1000, wrapper : function(x) {return {value: x, shape: "marble", color: "white"}}},
+            function () { return Rx.Observable.from("foo")}
+    ); //
+
+    RxDiag.init({title: "Rx.Observable.delay(500)"}, function (inObs) { return inObs.delay(500) }, input1); //
+    RxDiag.init({title: "squares.concat(marbles)"}, function (inObs0, inObs1) { return inObs0.concat(inObs1) }, input4, input5); //
+
+    RxDiag.init({title: "squares.map( f(square) {return marble})"},
+            function (inObs0) {
+                return inObs0.map(function (e) {
+                    return {shape: "marble", color: e.color}
+                    }
+                )
+            }, input6); //
+
+    var mapper1 = function (e) {
+        return Rx.Observable.merge(
+                Rx.Observable.just({shape: "marble", color: e.color}).delay(500),
+                Rx.Observable.just({shape: "marble", color: e.color}).delay(2500)
+        )
+    };
+
+
+    RxDiag.init({title: "squares.flatMap( f(square) {return [marble,marble]})"},
+            function (inObs0) { return inObs0.flatMap(mapper1)
+        }, input7
+    ); //
+
+
+    var mapper2 = function (e) {
+        return Rx.Observable.merge(
+                Rx.Observable.just({shape: "marble", color: e.color}).delay(500),
+                Rx.Observable.just({shape: "marble", color: e.color}).delay(2500)
+        )
+    };
+
+    RxDiag.init({title: "squares.concatMap( f(square) {return [marble,marble]})", outfix: true},
+            function (inObs0) { return inObs0.concatMap(mapper2)
+        }, input8); //
+
+    var scan = function (acc, ev) {
+        return {
+            value: acc.value * ev.value,
+            shape: "marble",
+            color: acc.color.charCodeAt(1) > ev.color.charCodeAt(0) ? acc.color : ev.color
+        }
+    };
+
+    RxDiag.init({title: "squares.scan( f(x,y) {return x*y)"},
+            function (inObs0) { return inObs0.scan(scan)
+        }, input9
+    ); //
+
+
+    // ------------------------------------------------------------------------------
+
+    var input9 = [
+        {shape: "marble", color: "white", "tick": 0, value: "down"},
+        {shape: "marble", color: "white", "tick": 1, value: "up"},
+
+        {shape: "complete", color: undefined, "tick": 10}
+    ];
+
+
+    RxDiag.init({},
+            function(inObs) {return inObs.complete(100)
+        }, complete0
+    );
+
+
+
 </script>
 
 
