@@ -175,6 +175,9 @@ RxDiag = (function () {
 
     RxAnimator.prototype.next = function (x, y, shape) {
         this.collect(drawEv(this.canvas, shape, x, y));
+        if (shape.value != undefined) {
+            this.collect(drawValue(this.canvas, x, y, shape.value));
+        }
     };
 
     RxAnimator.prototype.error = function (x, y) {
@@ -294,7 +297,7 @@ RxDiag = (function () {
     }
 
     function diamond(svg, x, y, color) {
-        var d = 30;
+        var d = 34;
         return svg.append("rect")
             .attr("x", x - d / 2).attr("y", y - d / 2)
             .attr("height", d).attr("width", d)
@@ -427,6 +430,19 @@ RxDiag = (function () {
         return g.style("stroke-width", sw)
             .style("stroke", "black");
 
+    }
+
+    function drawValue(svg, x, y, v) {
+        return svg.append("text")
+            .attr("x", x).attr("y", y + 8)
+            .text(v)
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "24px")
+            .attr("font-weight", "bold")
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .style("stroke", "black");
+        ;
     }
 
     function drawEv(svg, s, x, y) {
