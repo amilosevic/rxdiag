@@ -12,14 +12,16 @@ RxDiag = (function () {
         var fixcomplete = props.outfix ? 30 : 0;
         var offset = props.offset || 0;
         var delay = props.delay || 100;
+        var wrapper = props.wrapper || function (x) {return x};
+        var spread = props.spread || false;
         var container = props.container;
         var inputs = Array.prototype.slice.call(arguments, 2);
 
-        var animator = new RxAnimator(title, container, op, inputs, fixcomplete, offset, delay)
+        var animator = new RxAnimator(title, container, op, inputs, fixcomplete, offset, delay, wrapper, spread)
     };
 
 
-    function RxAnimator (title, container, op, inputs, outfix, offset, delay) {
+    function RxAnimator (title, container, op, inputs, outfix, offset, delay, wrapper, spread) {
 
 
         var self = this; // for closures
@@ -28,6 +30,8 @@ RxDiag = (function () {
         this.outfix = outfix;
         this.offset = offset || 0;
         this.delay = delay;
+        this.wrapper = wrapper;
+        this.spread = spread;
 
         // draw background and initialize draw surface
         this.surface(container);
@@ -65,7 +69,28 @@ RxDiag = (function () {
             });
         });
 
-        var outobs = this.transform(inobs);
+        var spreader = function () {
+
+        };
+
+        var outobs = this.transform(inobs).map(self.wrapper);
+
+        if (self.spread) {
+            outobs = outobs.map(function (x,idx) {
+               return {
+                   offset: -100 + idx*50,
+                   shape: x.shape,
+                   color: x.color,
+                   value: x.value
+               };
+            });
+        }
+
+        outobs.subscribe(
+            function (x) {console.log(x)},
+            function (e) {console.log("error")},
+            function () {console.log("Complete")}
+        );
 
         this.start0(inobs, outobs);
         // transformation
@@ -133,7 +158,7 @@ RxDiag = (function () {
             // onNext
             function (i) {
                 var fr = self.frame(i);
-                var x = self.ex(fr);
+                var x = self.ex(fr)  + (i.value.offset ? i.value.offset : 0 );
                 var y = self.ey();
                 self.next(x, y, i.value);
                 var y1 = self.ay();
