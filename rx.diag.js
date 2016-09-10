@@ -9,19 +9,25 @@ RxDiag = (function () {
         props = props || {};
 
         var title = props.title || '...';
+        var fixcomplete = props.outfix ? 30 : 0;
+        var offset = props.offset || 0;
+        var delay = props.delay || 100;
         var container = props.container;
         var inputs = Array.prototype.slice.call(arguments, 2);
 
-        var animator = new RxAnimator(title, container, op, inputs)
+        var animator = new RxAnimator(title, container, op, inputs, fixcomplete, offset, delay)
     };
 
 
-    function RxAnimator (title, container, op, inputs) {
+    function RxAnimator (title, container, op, inputs, outfix, offset, delay) {
 
 
         var self = this; // for closures
 
         this.delta = (inputs.length - 1) * 60;
+        this.outfix = outfix;
+        this.offset = offset || 0;
+        this.delay = delay;
 
         // draw background and initialize draw surface
         this.surface(container);
@@ -61,20 +67,26 @@ RxDiag = (function () {
 
         var outobs = this.transform(inobs);
 
-        this.start(inobs, outobs);
+        this.start0(inobs, outobs);
         // transformation
         
         this.canvas.on('click', function() {
             //console.log("f!");
-            self.start(inobs, outobs);
+            self.start0(inobs, outobs);
         });
 
     }
 
+    RxAnimator.prototype.start0 = function(inobs, outobs) {
+        var self = this;
+        self.clean();
+        setTimeout(function() {
+            self.start(inobs, outobs);
+        }, self.delay);
+    };
 
     RxAnimator.prototype.start = function(inobs, outobs) {
 
-        this.clean();
 
         this.ref = new Date().getTime();
         var self = this;
@@ -131,7 +143,7 @@ RxDiag = (function () {
             // onError
             function (e) {
                 var fr = self.frame();
-                var x = self.ex(fr);
+                var x = self.ex(fr) + self.outfix;
                 var y = self.ey();
                 self.error(x, y);
                 var y1 = self.ay();
@@ -141,7 +153,7 @@ RxDiag = (function () {
             // onComplete
             function () {
                 var fr = self.frame();
-                var x = self.ex(fr);
+                var x = self.ex(fr) + self.outfix;
                 var y = self.ey();
                 self.complete(x, y);
                 var y1 = self.ay();
@@ -195,7 +207,7 @@ RxDiag = (function () {
     };
 
     RxAnimator.prototype.ex = function (fr, index) {
-        return 25 + 10 * fr - (index == undefined ? 0 : index);
+        return this.offset + 25 + 10 * fr - (index == undefined ? 0 : index);
     };
 
     RxAnimator.prototype.ey = function () {
