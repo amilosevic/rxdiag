@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Rx Diag (JS) - RxDiag</title>
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.time.js"></script>
+    <script src="./rx.diag.js"></script>
+
+</head>
+<body>
+<h1>Rx Diag - Animations</h1>
+
+
+<hr/>
+
+<script>
+
+    /*  RxDiag4.java
+
+     return Observable
+     .just(diagEv)
+     .delay(diagEv.tick * 1000, TimeUnit.MILLISECONDS);
+
+     */
+
+    var shape = function () {
+        var s = {shape: "marble", color: "green", tick: 3};
+        return Rx.Observable.just(s)
+                .delay(s.tick * 1000)
+    };
+
+    RxDiag.init({title: "RxDiag4.java 'shape' projection", outfix: true, delay: 1000}, shape); //
+
+
+    /* RxDiag5.java
+    return Observable
+                    .<DiagEv>empty()
+                    .delay(diagEv.tick * 1000, TimeUnit.MILLISECONDS);
+    */
+
+    var complete = function () {
+        var s = {shape: "complete", tick: 6};
+        return Rx.Observable.empty()
+                .delay(s.tick * 1000)
+    };
+
+    RxDiag.init({title: "RxDiag5.java 'complete' projection", outfix: true, delay: 1000}, complete); //
+
+    /* RxDiag6.java
+
+     return Observable.concat(
+
+        Observable
+            .<DiagEv>empty()
+            .delay(diagEv.tick * 1000, TimeUnit.MILLISECONDS),
+
+        Observable
+            .<DiagEv>error(new Error("Throw!"))
+     );
+     */
+
+    var err = function () {
+        var s = {shape: "error", tick: 5};
+        return Rx.Observable.concat(
+                Rx.Observable.empty().delay(s.tick * 1000),
+                Rx.Observable.throw(new Error())
+        );
+    };
+
+    RxDiag.init({title: "RxDiag6.java 'error' projection", outfix: true, delay: 1000}, err); //
+
+    /* RxDiag7.java */
+
+    RxDiag.init({title: "RxDiag7.java 'shape-complete' merge", outfix: true, delay: 1000},
+            function () {
+                return Rx.Observable.merge(shape(), complete());
+            }
+    );
+
+    /* RxDiag8.java */
+
+    RxDiag.init({title: "RxDiag8.java 'shape-error' merge", outfix: true, delay: 1000},
+            function () {
+                return Rx.Observable.merge(shape(), err());
+            }
+    );
+
+    /* RxDiag9.java */
+
+    RxDiag.init({title: "RxDiag9.java 'shape-error-complete' merge", outfix: true, delay: 1000},
+            function () {
+                return Rx.Observable.merge(shape(), err(), complete());
+            }
+    );
+
+
+    // ------------------------------------------------------------------------------
+
+    var input9 = [
+        {shape: "marble", color: "white", "tick": 0, value: "down"},
+        {shape: "marble", color: "white", "tick": 1, value: "up"},
+
+        {shape: "complete", color: undefined, "tick": 10}
+    ];
+
+
+    RxDiag.init({},
+            function(inObs) {return inObs.complete(100)
+        }, complete0
+    );
+
+
+
+</script>
+
+
+
+</body>
+</html>
