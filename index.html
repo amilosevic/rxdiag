@@ -129,8 +129,6 @@
             function () { return Rx.Observable.throw(new Error())}
     ); //
 
-    Rx.Observable.from("foo").subscribe(function(x) {console.log(x)});
-
     RxDiag.init({title: "Rx.Observable.just(...)", outfix: true, delay: 1000, offset: 300},
             function () { return Rx.Observable.just({shape: "marble", color: "green", tick: 0})}
     ); //

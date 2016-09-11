@@ -87,12 +87,6 @@ RxDiag = (function () {
             });
         }
 
-        outobs.subscribe(
-            function (x) {console.log(x)},
-            function (e) {console.log("error")},
-            function () {console.log("Complete")}
-        );
-
         this.start0(inobs, outobs);
         // transformation
         
