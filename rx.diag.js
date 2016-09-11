@@ -14,15 +14,15 @@ RxDiag = (function () {
         var delay = props.delay || 100;
         var wrapper = props.wrapper || function (x) {return x};
         var spread = props.spread || false;
+        var condensed = props.condensed || false;
         var container = props.container;
         var inputs = Array.prototype.slice.call(arguments, 2);
 
-        var animator = new RxAnimator(title, container, op, inputs, fixcomplete, offset, delay, wrapper, spread)
+        var animator = new RxAnimator(title, container, op, inputs, fixcomplete, offset, delay, wrapper, spread, condensed)
     };
 
 
-    function RxAnimator (title, container, op, inputs, outfix, offset, delay, wrapper, spread) {
-
+    function RxAnimator (title, container, op, inputs, outfix, offset, delay, wrapper, spread, condensed) {
 
         var self = this; // for closures
 
@@ -32,6 +32,7 @@ RxDiag = (function () {
         this.delay = delay;
         this.wrapper = wrapper;
         this.spread = spread;
+        this.condensed = condensed;
 
         // draw background and initialize draw surface
         this.surface(container);
@@ -111,7 +112,6 @@ RxDiag = (function () {
     };
 
     RxAnimator.prototype.start = function(inobs, outobs) {
-
 
         this.ref = new Date().getTime();
         var self = this;
@@ -195,15 +195,15 @@ RxDiag = (function () {
     };
 
     RxAnimator.prototype.surface = function (container) {
-       this.canvas = canvas(container, this.delta);
+       this.canvas = canvas(container, this.delta, this.width);
     };
 
     RxAnimator.prototype.combinator = function (y, title) {
-        drawCombinator(this.canvas, y, (title || "..."));
+        drawCombinator(this.canvas, y, (title || "..."), this.width);
     };
 
     RxAnimator.prototype.eventline = function(y) {
-        drawEventline(this.canvas, y) ;
+        drawEventline(this.canvas, y, this.width) ;
     };
 
     RxAnimator.prototype.arrow = function (x1, y1, x2, y2) {
@@ -213,7 +213,7 @@ RxDiag = (function () {
     RxAnimator.prototype.next = function (x, y, shape) {
         this.collect(drawEv(this.canvas, shape, x, y));
         if (shape.value != undefined) {
-            this.collect(drawValue(this.canvas, x, y, shape.value));
+            this.collect(drawValue(this.canvas, x, y, shape.value,"24px"));
         }
     };
 
@@ -232,7 +232,8 @@ RxDiag = (function () {
     };
 
     RxAnimator.prototype.ex = function (fr, index) {
-        return this.offset + 25 + 10 * fr - (index == undefined ? 0 : index);
+        var d = this.condensed ? 3 : 10;
+        return this.offset + 25 + d * fr - (index == undefined ? 0 : index);
     };
 
     RxAnimator.prototype.ey = function () {
@@ -262,14 +263,10 @@ RxDiag = (function () {
     };
 
 
-
-
-
-
     // -- private --
 
-    var width = 640;
-    var height = 320;
+    const width = 640;
+    const height = 320;
 
     var sw = 3;
     var r = 1;
@@ -397,6 +394,23 @@ RxDiag = (function () {
 
     }
 
+    function tiny(svg, x, y, color) {
+        var w = 16;
+        var h = 44;
+        var r = 3;
+        return svg.append("rect")
+            .attr("x", x - w / 2).attr("y", y - h / 2)
+            .attr("height", h).attr("width", w)
+            .attr("rx", r)
+            .attr("ry", r)
+            .style("fill", color)
+            .style("stroke-width", sw-1)
+            .style("stroke", "black")
+            //.style("filter", "url(#shadow)")
+            ;
+    }
+
+
     function drawEventline(svg, y) {
         return svg.append("line")
             .attr("x1", 6).attr("x2", width - 6)
@@ -469,12 +483,12 @@ RxDiag = (function () {
 
     }
 
-    function drawValue(svg, x, y, v) {
+    function drawValue(svg, x, y, v, size) {
         return svg.append("text")
             .attr("x", x).attr("y", y + 8)
             .text(v)
             .attr("font-family", "sans-serif")
-            .attr("font-size", "24px")
+            .attr("font-size", size)
             .attr("font-weight", "bold")
             .attr("text-anchor", "middle")
             .attr("fill", "white")
@@ -494,6 +508,8 @@ RxDiag = (function () {
                 return diamond(svg, x, y, s.color);
             case 'triangle':
                 return triangle(svg, x, y, s.color);
+            case 'tiny':
+                return tiny(svg, x, y, s.color);
             default :
                 console.error("unknown element" + s.shape);
         }
