@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.time.js"></script>
     <script src="./rx.diag.js"></script>
+    <script src="./rx.morse.complete.js"></script>
 
 </head>
 <body>
@@ -99,18 +100,35 @@
 
     // ------------------------------------------------------------------------------
 
-    var input9 = [
-        {shape: "marble", color: "white", "tick": 0, value: "down"},
-        {shape: "marble", color: "white", "tick": 1, value: "up"},
 
-        {shape: "complete", color: undefined, "tick": 10}
+    var complete0 = [
+        {shape: "tiny", color: "white", "tick": 1, value: "\u2193"},
+        {shape: "tiny", color: "#eee", "tick": 2, value: "\u2191"},
+        {shape: "tiny", color: "white", "tick": 6, value: "\u2193"},
+        {shape: "tiny", color: "#eee", "tick": 9, value: "\u2191"},
+
+
+        {shape: "complete", color: undefined, "tick": 18}
     ];
 
+    function x2shape (x) {
+        if (x == 'ws') {
+            return {shape: "tiny", color: "green", value: "w"};
+        } else if (x == 'ls') {
+            return {shape: "tiny", color: "red", value: "l"};
+        } else if (x == 'nl') {
+            return {shape: "tiny", color: "orange", value: "n"};
+        } else {
+            return {shape: "tiny", color: "magenta", value: "?"};
+        }
+    }
 
-    RxDiag.init({},
-            function(inObs) {return inObs.complete(100)
-        }, complete0
+    RxDiag.init({title: "E <space> T", condensed:true, outfix: true, wrapper: function (x) { return x.value == undefined ? x2shape(x)  : x}},
+            function(inObs) {
+                return inObs.spacer(1000, function (x) { return x.value == "\u2191"})
+            }, complete0
     );
+
 
 
 
