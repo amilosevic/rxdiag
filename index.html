@@ -91,7 +91,7 @@
     var input8 = [
         {shape: "square", color: "blue", "tick": 0},
         {shape: "square", color: "green", "tick": 2},
-        {shape: "square", color: "red", "tick": 4},
+        {shape: "square", color: "red", "tick": 3},
         {shape: "complete", color: undefined, "tick": 6}
     ];
 
@@ -104,7 +104,19 @@
         {shape: "complete", color: undefined, "tick": 8}
     ];
 
-
+    var input10 = [
+        {shape: "marble", color: "white", "tick": 1 },
+        {shape: "marble", color: "blue", "tick": 2 },
+        {shape: "marble", color: "green", "tick": 3},
+        {shape: "marble", color: "yellow", "tick": 4},
+        {shape: "marble", color: "orange", "tick": 5},
+        {shape: "marble", color: "red", "tick": 6},
+        {shape: "marble", color: "magenta", "tick": 7},
+        {shape: "marble", color: "cyan", "tick": 8},
+        {shape: "marble", color: "brown", "tick": 9},
+        {shape: "marble", color: "black", "tick": 10},
+        {shape: "complete", color: undefined, "tick": 11}
+    ];
 
 
 
@@ -186,7 +198,7 @@
         }, input9
     ); //
 
-
+    RxDiag.init({title: "..."}, function (inObs) { return inObs.delay(0) }, input10); //
 
 
 
