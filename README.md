@@ -70,4 +70,6 @@ Primer rada kombinatora [**Delay**](http://reactivex.io/documentation/operators/
  
  - http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html
  - http://www.w3schools.com/js/
+ - http://tutorials.jenkov.com/svg/index.html 
+ 
  
