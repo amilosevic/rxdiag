@@ -9,6 +9,46 @@
                 markerUnits="strokeWidth">
             <path d="M2,2 L2,10 L10,6 L2,2 Z" style="stroke: #aaa; fill: #aaa"/>
         </marker>
+
+        <g id="branching">
+            <path id="ls-e" d="M 0 0 v 10 h 45 "
+                  stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
+                  fill="none"/>
+
+            <path id="ws-e" d="M 0 10 v 10 h 125 "
+                  stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
+                  fill="none"/>
+
+            <path id="ss-e" d="M 0 20 v 10 h 385 "
+                  stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
+                  fill="none"/>
+        </g>
+
+        <g id="down">
+            <rect x="-5" y="-11" height="22" width="10" rx="3" ry="3" style="fill: white; stroke-width: 1; stroke: black;"/>
+            <text x="0" y="7" font-family="sans-serif" font-size="24px" font-weight="bold" text-anchor="middle" fill="white" style="stroke: black;">&#x2193;</text>
+        </g>
+
+        <g id="up">
+            <rect x="-5" y="-11" height="22" width="10" rx="3" ry="3" style="fill: white; stroke-width: 1; stroke: black;"/>
+            <text x="0" y="7" font-family="sans-serif" font-size="24px" font-weight="bold" text-anchor="middle" fill="white" style="stroke: black;">&#x2191;</text>
+        </g>
+
+        <g id="ls">
+            <circle cx="0" cy="0" r="12" style="fill: white; stroke-width: 1; stroke: black;"/>
+            <text x="0" y="5" font-family="sans-serif" font-size="12px" font-weight="bold" text-anchor="middle" fill="black" style="stroke: black;">LS</text>
+        </g>
+
+        <g id="ws">
+            <circle cx="0" cy="0" r="12" style="fill: white; stroke-width: 1; stroke: black;"/>
+            <text x="0" y="5" font-family="sans-serif" font-size="12px" font-weight="bold" text-anchor="middle" fill="black" style="stroke: black;">WS</text>
+        </g>
+
+        <g id="ss">
+            <circle cx="0" cy="0" r="12" style="fill: white; stroke-width: 1; stroke: black;"/>
+            <text x="0" y="5" font-family="sans-serif" font-size="12px" font-weight="bold" text-anchor="middle" fill="black" style="stroke: black;">SS</text>
+        </g>
+
     </defs>
 
     <!-- input signal level one -->
@@ -17,7 +57,7 @@
           stroke-width="1"
           fill="none"/>
 
-    <path id="timeline-in" d="M 20 100 h 610 "
+    <path id="timeline-in" d="M 20 90 h 610 "
           stroke-dasharray="1,2"
           stroke="#aaa"
           stroke-width="1"
@@ -46,8 +86,8 @@
             <path id="e-up-guide" d="M 60 115 v 130 " style="marker-end: url(&quot;#mArrowQ&quot;"/>
 
             <path id="e-ls-guide" d="M 120 140 v 105 " style="marker-end: url(&quot;#mArrowQ&quot;"/>
-            <!--<path id="e-ws-guide" d="M 200 140 v 40 " style="marker-end: url(&quot;#mArrowQ&quot;"/>-->
-            <!--<path id="e-ss-guide" d="M 460 150 v 30 " style="marker-end: url(&quot;#mArrowQ&quot;"/>-->
+            <path id="e-ws-guide" d="M 200 140 v 40 " style="marker-end: url(&quot;#mArrowQ&quot;"/>
+            <path id="e-ss-guide" d="M 460 150 v 40 " style="marker-end: url(&quot;#mArrowQ&quot;"/>
 
             <path id="t-down-guide" d="M 150 115 v 130 " style="marker-end: url(&quot;#mArrowQ&quot;"/>
             <path id="t-up-guide" d="M 210 115 v 130 " style="marker-end: url(&quot;#mArrowQ&quot;"/>
@@ -63,48 +103,36 @@
         <rect x="25" y="110" height="140" width="600"
               style="stroke:#000000; fill: transparent"/>
 
-        <!-- scheduled evebts -->
+        <!-- scheduled event arrows -->
+        <use href="#branching" x="60" y="130"/>
+        <use href="#branching" x="210" y="180"/>
 
-        <path id="ls-e" d="M 60 130 v 10 h 60 "
-              stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
-              fill="none"/>
 
-        <path id="ws-e" d="M 60 140 v 10 h 140 "
-              stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
-              fill="none"/>
+        <use href="#ls" x="120" y="140" />
+        <use href="#ws" x="200" y="150" />
+        <use href="#ss" x="460" y="160" />
 
-        <path id="ss-e" d="M 60 150 v 10 h 400 "
-              stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
-              fill="none"/>
+        <use href="#ls" x="270" y="190" />
+        <use href="#ws" x="350" y="200" />
+        <use href="#ss" x="610" y="210" />
 
-        <path id="ls-t" d="M 210 180 v 10 h 60 "
-              stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
-              fill="none"/>
-
-        <path id="ws-t" d="M 210 190 v 10 h 140 "
-              stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
-              fill="none"/>
-
-        <path id="ss-t" d="M 210 200 v 10 h 400 "
-              stroke="black" stroke-width="1" style="marker-end: url(&quot;#mArrow&quot;);"
-              fill="none"/>
 
     </g>
 
     <!-- out arrow -->
 
     <g stroke="black" stroke-width="1" stroke-dasharray="1,5" fill="black">
-        <path id="e-down-out" d="M 40 280 v 35 " style="marker-end: url(&quot;#mArrow&quot;"/>
-        <path id="e-up-out" d="M 60 280 v 35 " style="marker-end: url(&quot;#mArrow&quot;"/>
+        <path id="e-down-out" d="M 40 280 v 45 " style="marker-end: url(&quot;#mArrow&quot;"/>
+        <path id="e-up-out" d="M 60 280 v 45 " style="marker-end: url(&quot;#mArrow&quot;"/>
 
-        <path id="e-ls-out" d="M 120 280 v 35 " style="marker-end: url(&quot;#mArrow&quot;"/>
+        <path id="e-ls-out" d="M 120 280 v 45 " style="marker-end: url(&quot;#mArrow&quot;"/>
 
-        <path id="t-down-out" d="M 150 280 v 35 " style="marker-end: url(&quot;#mArrow&quot;"/>
-        <path id="t-up-out" d="M 210 280 v 35 " style="marker-end: url(&quot;#mArrow&quot;"/>
+        <path id="t-down-out" d="M 150 280 v 45 " style="marker-end: url(&quot;#mArrow&quot;"/>
+        <path id="t-up-out" d="M 210 280 v 45 " style="marker-end: url(&quot;#mArrow&quot;"/>
 
-        <path id="t-ls-out" d="M 270 280 v 35 " style="marker-end: url(&quot;#mArrow&quot;"/>
-        <path id="t-ws-out" d="M 350 280 v 35 " style="marker-end: url(&quot;#mArrow&quot;"/>
-        <path id="t-ws-out" d="M 610 280 v 35 " style="marker-end: url(&quot;#mArrow&quot;"/>
+        <path id="t-ls-out" d="M 270 280 v 45 " style="marker-end: url(&quot;#mArrow&quot;"/>
+        <path id="t-ws-out" d="M 350 280 v 45 " style="marker-end: url(&quot;#mArrow&quot;"/>
+        <path id="t-ws-out" d="M 610 280 v 45 " style="marker-end: url(&quot;#mArrow&quot;"/>
     </g>
 
 
@@ -113,6 +141,27 @@
           stroke="#aaa"
           stroke-width="1"
           fill="none"/>
+
+    <!-- input events -->
+    <use href="#down" x="40" y="90" />
+    <use href="#up" x="60" y="90" />
+
+    <use href="#down" x="150" y="90" />
+    <use href="#up" x="210" y="90" />
+
+
+    <!-- output events -->
+    <use href="#down" x="40" y="340" />
+    <use href="#up" x="60" y="340" />
+
+    <use href="#ls" x="120" y="340" />
+
+    <use href="#down" x="150" y="340" />
+    <use href="#up" x="210" y="340" />
+
+    <use href="#ls" x="270" y="340" />
+    <use href="#ws" x="350" y="340" />
+    <use href="#ss" x="610" y="340" />
 
 
     <!--<line x1="6" x2="634" y1="50" y2="50" style="stroke-width: 3; stroke: blue;"></line>-->
